@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#96C2E4"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".Second_Page">
+
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register" />
+
+    <Button
+        android:id="@+id/start2_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter" />
+
+    <Button
+        android:id="@+id/start3_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calculator " />
+
+    <Button
+        android:id="@+id/start4_but"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bluetooth" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Puzzle" />
+
+</LinearLayout>
