@@ -49,7 +49,7 @@ public class Calculator extends AppCompatActivity {
         double x = Double.parseDouble(n1.getText().toString());
         double y = Double.parseDouble(n2.getText().toString());
         if (y==0)
-            result.setText("Number 2 is zero and we cant devide that!!!");
+            result.setText("Second Number is zero and we cant devide that!!!");
         else {
             double z = x / y;
             result.setText(String.valueOf(z));

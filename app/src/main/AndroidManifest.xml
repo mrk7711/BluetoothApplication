@@ -2,12 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission
-        android:name="android.permission.BLUETOOTH"
-        android:maxSdkVersion="30" />
-    <uses-permission
-        android:name="android.permission.BLUETOOTH_ADMIN"
-        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
@@ -21,19 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:targetApi="31">
-        <activity
-            android:name=".Bluetooth2"
-            android:exported="false" />
-        <activity
-            android:name=".PuzzleGame"
-            android:exported="false" />
-        <activity
-            android:name=".Puzzle"
-            android:exported="false" /> <!-- This is our first page(Launcher) in this app -->
+
+ <!-- This is our first page(Launcher) in this app -->
         <activity
             android:name=".Welcome_page"
             android:exported="true">
-
             <!-- Next line describe launcher (Main And first Page that opens!!) -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,6 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".PuzzleGame" />
         <activity android:name=".Bluetooth_" />
         <activity android:name=".Calculator" />
         <activity android:name=".Enterpage" />
