@@ -1,20 +1,21 @@
 package com.example.myapplication;
 
+import static androidx.activity.result.contract.ActivityResultContracts.*;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-
 import android.content.Intent;
 
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-
 import android.view.View;
 
 import android.widget.ArrayAdapter;
@@ -31,11 +32,22 @@ import java.util.UUID;
 public class Bluetooth_ extends AppCompatActivity {
 
     //    Button btnOn, btnOff;
+    public static final int Bluetooth_req_code = 1;
     Button on, off, list, pair;
     ListView lv;
-    private BluetoothAdapter BA;
-    private Set<BluetoothDevice> pairedDevices;
-    private ActivityResultLauncher<Intent> launcher;
+    BluetoothAdapter BA;
+    ActivityResultLauncher<Intent> ble = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                on.setText("Hi Rnica");
+            }
+        }
+    });
+
+//    private Set<BluetoothDevice> pairedDevices;
+//    private ActivityResultLauncher<Intent> launcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,49 +59,32 @@ public class Bluetooth_ extends AppCompatActivity {
         list = findViewById(R.id.LIST);
         pair = findViewById(R.id.Pair);
         lv = findViewById(R.id.listView);
+        BA = BluetoothAdapter.getDefaultAdapter();
 
-        launcher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Intent data = result.getData();
-                    }
-                }
-        );
-    }
-
-    public void on(View v) {
+        if (BA == null)
+            Toast.makeText(Bluetooth_.this, "This Device Does not Support", Toast.LENGTH_LONG).show();
         if (!BA.isEnabled()) {
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//            startActivityForResult(turnOn, 0);
-            launcher.launch(turnOn);
-            Toast.makeText(getApplicationContext(), "Turned on", Toast.LENGTH_LONG).show();
+            on.setText("Turn Blue ON");
         } else {
-            Toast.makeText(getApplicationContext(), "Already on", Toast.LENGTH_LONG).show();
+            on.setText("Turn Blue OFF");
         }
-    }
-
-    public void off(View v) {
-        BA.disable();
-        Toast.makeText(getApplicationContext(), "Turned off", Toast.LENGTH_LONG).show();
-    }
-
-    public void visible(View v) {
-        Intent getVisible = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        launcher.launch(getVisible);
-    }
-
-    public void list(View v) {
-        pairedDevices = BA.getBondedDevices();
-        ArrayList list = new ArrayList();
-
-        for (BluetoothDevice bt : pairedDevices) {
-            list.add(bt.getName());
-        }
-        Toast.makeText(getApplicationContext(), "Showing Paired Devices",Toast.LENGTH_SHORT).show();
-
-        final ArrayAdapter adapter = new  ArrayAdapter(this,android.R.layout.simple_list_item_1, list);
-
-        lv.setAdapter(adapter);
+        // In this method we can make make bluetooth on by clicking On_Btn;
+        on.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!BA.isEnabled()) {
+                    Intent BLE = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                   ble.launch(BLE);
+//                   getActivityResultRegistry(BLE);
+//                   startActivityForResult(BLE,0);
+                    Toast.makeText(getApplicationContext(), "Turned on",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Already on", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }
+
+

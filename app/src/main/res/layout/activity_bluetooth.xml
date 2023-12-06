@@ -34,7 +34,7 @@
 
         <Button
             android:id="@+id/ON"
-            android:layout_width="wrap_content"
+            android:layout_width="124dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="on"
@@ -42,7 +42,7 @@
 
         <Button
             android:id="@+id/OFF"
-            android:layout_width="wrap_content"
+            android:layout_width="136dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="off"

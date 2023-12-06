@@ -26,8 +26,6 @@ public class Second_Page extends AppCompatActivity {
         Button b5=findViewById(R.id.button2);
 
 
-
-
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,13 +57,6 @@ public class Second_Page extends AppCompatActivity {
             }
         });
 
-
-        b5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Second_Page.this.startActivity(new Intent(Second_Page.this, PuzzleGame.class));
-            }
-        });
 
     }
 }

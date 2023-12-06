@@ -8,11 +8,10 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 22
-        targetSdk = 34
+        minSdk = 15
+        targetSdk = 31
         versionCode = 1
-        versionName = "1.0"
-
+        versionName = "1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
