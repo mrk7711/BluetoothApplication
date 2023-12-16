@@ -56,8 +56,6 @@ public class Second_Page extends AppCompatActivity {
                 Second_Page.this.startActivity(new Intent(Second_Page.this, Bluetooth_.class));
             }
         });
-
-
     }
 }
 
