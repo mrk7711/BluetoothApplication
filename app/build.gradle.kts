@@ -8,13 +8,12 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myapplication"
-        minSdk = 15
-        targetSdk = 31
+        minSdk = 23
+        targetSdk = 34
         versionCode = 1
         versionName = "1.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
