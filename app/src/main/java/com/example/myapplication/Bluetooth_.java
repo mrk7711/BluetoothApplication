@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -27,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,7 +33,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
-
 public class Bluetooth_ extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
@@ -48,26 +45,29 @@ public class Bluetooth_ extends AppCompatActivity {
     Button mPairedBtn;
     Button mVisBtn;
     ListView lv;
-    BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
+    Intent bluetoothEnablingIntent;
+    BluetoothDevice[] bluetoothPairedDevArray;
     private BluetoothAdapter mBlueAdapter;
-    private BluetoothSocket  mBlueSocket;
+    private BluetoothSocket mBlueSocket;
     private OutputStream outstream;
     private InputStream instream;
     private byte[] mmBuffer;    // mmBuffer store for the stream
     private Set<BluetoothDevice> pairedDevices;
+    private static final String APP_NAME = "DA14531";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static String address;
     ActivityResultLauncher<Intent> activityResultLauncher;
-    //آدرس مک مربوط به بلوتوث میکرو را در تابع در خط 158 از کاربر گرفته می شود.
+
+    //آدرس مک مربوط به بلوتوث میکرو را در تابع در خط 167 از کاربر گرفته می شود.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
-        on=findViewById(R.id.btnOn);
-        off=findViewById(R.id.btnOff);
+        on = findViewById(R.id.btnOn);
+        off = findViewById(R.id.btnOff);
         mOnBtn = findViewById(R.id.ON);
         mOffBtn = findViewById(R.id.OFF);
-        mVisBtn=findViewById(R.id.vis);
+        mVisBtn = findViewById(R.id.vis);
         mPairedBtn = findViewById(R.id.Pair);
         lv = findViewById(R.id.lv);
         activityResultLauncher = registerForActivityResult(
@@ -79,178 +79,185 @@ public class Bluetooth_ extends AppCompatActivity {
                         Intent data = result.getData();
                     }
                 });
-        // Adapter
+
         mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothEnablingIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         checkBTState(); // Check for Bluetooth support and then check to make sure it is turned on
-
-            on.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    write("1");
-                    Toast.makeText(getBaseContext(), "Turn on LED", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            off.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    write("0");
-                    Toast.makeText(getBaseContext(), "Turn off LED", Toast.LENGTH_SHORT).show();
-                }
-            });
-            mOnBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Turn on Bluetooth btn click
-                    if (!mBlueAdapter.isEnabled()) {
-                        showToast("Turning On Bluetooth...");
-
-                        // Intent to On Bluetooth
-                        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        //  startActivityForResult(intent, REQUEST_ENABLE_BT);
-                        activityResultLauncher.launch(intent);
-                    } else {
-                        showToast("Bluetooth is already on");
-                    }
-                }
-            });
-
-            //
-            mOffBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mBlueAdapter.isEnabled()) {
-                        if (ActivityCompat.checkSelfPermission(Bluetooth_.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            return;
-                        }
-                        mBlueAdapter.disable();
-                        showToast("Turning Bluetooth Off");
-                    } else {
-                        showToast("Bluetooth is already off");
-                    }
-                }
-            });
-            // Get Paired devices button click
-
-        mVisBtn.setOnClickListener(new View.OnClickListener() {
+        on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent getVisible = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                activityResultLauncher.launch(getVisible);
+                write("1");
+                showToast("Turn on LED");
             }
         });
-            mPairedBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (ActivityCompat.checkSelfPermission(Bluetooth_.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-                    pairedDevices = mBlueAdapter.getBondedDevices();
-                    if(pairedDevices.size()>0) {
-                        ArrayList list = new ArrayList();
-                        for (BluetoothDevice a : pairedDevices)
-                        {
-                            address=a.getAddress();
-                            list.add(a.getName());
-                            list.add(a.getAddress());
-                        }
-                        Toast.makeText(getApplicationContext(), "Showing Paired Devices",Toast.LENGTH_SHORT).show();
-                        final ArrayAdapter adapter = new  ArrayAdapter(Bluetooth_.this,android.R.layout.simple_list_item_1, list);
-                        lv.setAdapter(adapter);
-                    }
-                }
-            });
+        off.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                write("0");
+                showToast("Turn off LED");
+            }
+        });
+//        mOnBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Emulator doesn't support Bluetooth and will return null
+//                if(mBlueAdapter==null) {
+//                    errorExit("Fatal Error", "Bluetooth not support");
+//                } else {
+//                    if ( mBlueAdapter.isEnabled()) {
+//                        showToast("Already On!");
+//                    } else {
+//                        showToast("Please turn it On!");
+//                        Intent intent = new Intent();
+//                        intent.setAction(Intent.ACTION_SEND);
+////                        intent.setType("text/plain");
+//                        startActivity(intent);
+////                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+////                startActivityForResult(enableBtIntent,0);
+////                startActivity(enableBtIntent);
+////                activityResultLauncher.launch(enableBtIntent);
+//                    }
+//                }
+//            }
+//        });
+//
+//        //
+//        mOffBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (mBlueAdapter.isEnabled())
+//                {
+////                    mBlueAdapter.disable();
+//                    showToast("Turning Bluetooth Off");
+//                } else {
+//                    showToast("Bluetooth is already off");
+//                }
+//            }
+//        });
+//        // Get Paired devices button click
+//
+//        mVisBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent getVisible = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+//                activityResultLauncher.launch(getVisible);
+//            }
+//        });
+//        mPairedBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                pairedDevices = mBlueAdapter.getBondedDevices();
+//                    if(pairedDevices.size()>0) {
+//                        ArrayList list = new ArrayList();
+//                        for (BluetoothDevice a : pairedDevices)
+//                        {
+//                            address=a.getAddress();
+//                            list.add(a.getName());
+//                            list.add(a.getAddress());
+//                        }
+//                        Toast.makeText(getApplicationContext(), "Showing Paired Devices",Toast.LENGTH_SHORT).show();
+//                        final ArrayAdapter adapter = new  ArrayAdapter(Bluetooth_.this,android.R.layout.simple_list_item_1, list);
+//                        lv.setAdapter(adapter);
+//                    }
+//                }
+//            });
     }
-
-    public void onResume() {
-        super.onResume();
-
-        Log.d(TAG, "...onResume - try connect...");
-
-        // Set up a pointer to the remote node using it's address.
-        BluetoothDevice device = mBlueAdapter.getRemoteDevice(address);
-
-        // Two things are needed to make a connection:
-        //   A MAC address, which we got above.
-        //   A Service ID or UUID.  In this case we are using the
-        //     UUID for SPP.
-
-        try {
-            mBlueSocket = createBluetoothSocket(device);
-        } catch (IOException e1) {
-            errorExit("Fatal Error", "In onResume() and socket create failed: " + e1.getMessage() + ".");
-        }
-
-        // Discovery is resource intensive.  Make sure it isn't going on
-        // when you attempt to connect and pass your message.
-        mBlueAdapter.cancelDiscovery();
-
-        // Establish the connection.  This will block until it connects.
-        Log.d(TAG, "...Connecting...");
-        try {
-            mBlueSocket.connect();
-            Log.d(TAG, "...Connection ok...");
-        } catch (IOException e) {
-            try {
-                mBlueSocket.close();
-            } catch (IOException e2) {
-                errorExit("Fatal Error", "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+    private void checkBTState() {
+        // Emulator doesn't support Bluetooth and will return null
+        if(mBlueAdapter==null) {
+            errorExit("Fatal Error", "Bluetooth not support");
+        } else {
+            if ( mBlueAdapter.isEnabled()) {
+                showToast("Already On!");
+            } else {
+                showToast("Please turn it On!");
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                startActivity(intent);
+                //Prompt user to turn on Bluetooth
+//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                startActivityForResult(enableBtIntent,0);
+//                startActivity(enableBtIntent);
+//                activityResultLauncher.launch(enableBtIntent);
             }
         }
-
-        // Create a data stream so we can talk to server.
-        Log.d(TAG, "...Create Socket...");
-
-        try {
-            outstream = mBlueSocket.getOutputStream();
-        } catch (IOException e) {
-            errorExit("Fatal Error", "In onResume() and output stream creation failed:" + e.getMessage() + ".");
-        }
     }
-
-    public void onPause() {
-        super.onPause();
-
-        Log.d(TAG, "...In onPause()...");
-
-        if (outstream != null) {
-            try {
-                outstream.flush();
-            } catch (IOException e) {
-                errorExit("Fatal Error", "In onPause() and failed to flush output stream: " + e.getMessage() + ".");
-            }
-        }
-
-        try     {
-            mBlueSocket.close();
-        } catch (IOException e2) {
-            errorExit("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
-        }
-    }
-
-    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
-
-            try {
-                final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", new Class[] { UUID.class });
-                return (BluetoothSocket) m.invoke(device, MY_UUID);
-            } catch (Exception e) {
-                Log.e(TAG, "Could not create Insecure RFComm Connection",e);
-            }
-    }
+//    public void onResume() {
+//        super.onResume();
+//
+//        Log.d(TAG, "...onResume - try connect...");
+//
+//        // Set up a pointer to the remote node using it's address.
+//        BluetoothDevice device = mBlueAdapter.getRemoteDevice(address);
+//
+//        // Two things are needed to make a connection:
+//        //   A MAC address, which we got above.
+//        //   A Service ID or UUID.  In this case we are using the
+//        //     UUID for SPP.
+//
+//        try {
+//            mBlueSocket = createBluetoothSocket(device);
+//        } catch (IOException e1) {
+//            errorExit("Fatal Error", "In onResume() and socket create failed: " + e1.getMessage() + ".");
+//        }
+//
+//        // Discovery is resource intensive.  Make sure it isn't going on
+//        // when you attempt to connect and pass your message.
+//        mBlueAdapter.cancelDiscovery();
+//
+//        // Establish the connection.  This will block until it connects.
+//        Log.d(TAG, "...Connecting...");
+//        try {
+//            mBlueSocket.connect();
+//            Log.d(TAG, "...Connection ok...");
+//        } catch (IOException e) {
+//            try {
+//                mBlueSocket.close();
+//            } catch (IOException e2) {
+//                errorExit("Fatal Error", "In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+//            }
+//        }
+//
+//        // Create a data stream so we can talk to server.
+//        Log.d(TAG, "...Create Socket...");
+//
+//        try {
+//            outstream = mBlueSocket.getOutputStream();
+//        } catch (IOException e) {
+//            errorExit("Fatal Error", "In onResume() and output stream creation failed:" + e.getMessage() + ".");
+//        }
+//    }
+//
+//    public void onPause() {
+//        super.onPause();
+//
+//        Log.d(TAG, "...In onPause()...");
+//
+//        if (outstream != null) {
+//            try {
+//                outstream.flush();
+//            } catch (IOException e) {
+//                errorExit("Fatal Error", "In onPause() and failed to flush output stream: " + e.getMessage() + ".");
+//            }
+//        }
+//
+//        try     {
+//            mBlueSocket.close();
+//        } catch (IOException e2) {
+//            errorExit("Fatal Error", "In onPause() and failed to close socket." + e2.getMessage() + ".");
+//        }
+//    }
+//
+//    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+//
+//            try {
+//                final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", new Class[] { UUID.class });
+//                return (BluetoothSocket) m.invoke(device, MY_UUID);
+//            } catch (Exception e) {
+//                Log.e(TAG, "Could not create Insecure RFComm Connection",e);
+//            }
+//    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -278,23 +285,13 @@ public class Bluetooth_ extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-
-    private void sendData(String message) {
-        byte[] msgBuffer = message.getBytes();
-
-        Log.d(TAG, "...Send data: " + message + "...");
-
+//
+    public void write(String message) {                 //Transmit Data
+        byte[] bytes=message.getBytes();
         try {
-            outstream.write(msgBuffer);
+            outstream.write(bytes);
         } catch (IOException e) {
-            String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
-            if (address.equals("00:00:00:00:00:00"))
-                msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
-            msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
-
-            errorExit("Fatal Error", msg);
+            Log.e(TAG, "Error occurred when sending data", e);
         }
     }
 
@@ -314,16 +311,6 @@ public class Bluetooth_ extends AppCompatActivity {
         }
     }
 
-    public void write(String message) {                 //Transmit Data
-        byte[] bytes=message.getBytes();
-        try {
-            outstream.write(bytes);
-        } catch (IOException e) {
-            Log.e(TAG, "Error occurred when sending data", e);
-        }
-    }
-
-
     private void showToast (String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
@@ -332,21 +319,7 @@ public class Bluetooth_ extends AppCompatActivity {
         finish();
     }
 
-    private void checkBTState() {
-        // Emulator doesn't support Bluetooth and will return null
-        if(mBlueAdapter==null) {
-            errorExit("Fatal Error", "Bluetooth not support");
-        } else {
-            if (mBlueAdapter.isEnabled()) {
-                Log.d(TAG, "...Bluetooth ON...");
-            } else {
-                //Prompt user to turn on Bluetooth
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                activityResultLauncher.launch(enableBtIntent);
-            }
-        }
-    }
-    public void cancel() {
+    public void cancel() {              //Socket Canceling Process.!
         try {
             mBlueSocket.close();
         } catch (IOException e) {
