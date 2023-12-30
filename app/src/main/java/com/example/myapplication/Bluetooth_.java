@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +35,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+
 public class Bluetooth_ extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVER_BT = 1;
@@ -56,7 +59,8 @@ public class Bluetooth_ extends AppCompatActivity {
     private static final String APP_NAME = "DA14531";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static String address;
-    ActivityResultLauncher<Intent> activityResultLauncher;
+    private static String name;
+    ActivityResultLauncher activityResultLauncher;
 
     //آدرس مک مربوط به بلوتوث میکرو را در تابع در خط 167 از کاربر گرفته می شود.
     @Override
@@ -81,8 +85,9 @@ public class Bluetooth_ extends AppCompatActivity {
                 });
 
         mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
-        bluetoothEnablingIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//        bluetoothEnablingIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         checkBTState(); // Check for Bluetooth support and then check to make sure it is turned on
+        ShowPaired_device();
         on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,7 +132,7 @@ public class Bluetooth_ extends AppCompatActivity {
 //            public void onClick(View view) {
 //                if (mBlueAdapter.isEnabled())
 //                {
-////                    mBlueAdapter.disable();
+//                    mBlueAdapter.disable();
 //                    showToast("Turning Bluetooth Off");
 //                } else {
 //                    showToast("Bluetooth is already off");
@@ -143,45 +148,82 @@ public class Bluetooth_ extends AppCompatActivity {
 //                activityResultLauncher.launch(getVisible);
 //            }
 //        });
-//        mPairedBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
+        mPairedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 //                pairedDevices = mBlueAdapter.getBondedDevices();
-//                    if(pairedDevices.size()>0) {
-//                        ArrayList list = new ArrayList();
-//                        for (BluetoothDevice a : pairedDevices)
-//                        {
-//                            address=a.getAddress();
+                if (pairedDevices.size() > 0) {
+                    ArrayList list = new ArrayList();
+                    for (BluetoothDevice a : pairedDevices) {
+                        address = a.getAddress();
 //                            list.add(a.getName());
-//                            list.add(a.getAddress());
-//                        }
-//                        Toast.makeText(getApplicationContext(), "Showing Paired Devices",Toast.LENGTH_SHORT).show();
-//                        final ArrayAdapter adapter = new  ArrayAdapter(Bluetooth_.this,android.R.layout.simple_list_item_1, list);
-//                        lv.setAdapter(adapter);
-//                    }
-//                }
-//            });
+                        list.add(a.getAddress());
+                    }
+                    Toast.makeText(getApplicationContext(), "Showing Paired Devices", Toast.LENGTH_SHORT).show();
+                    final ArrayAdapter adapter = new ArrayAdapter(Bluetooth_.this, android.R.layout.simple_list_item_1, list);
+                    lv.setAdapter(adapter);
+                }
+            }
+        });
     }
+
     private void checkBTState() {
         // Emulator doesn't support Bluetooth and will return null
-        if(mBlueAdapter==null) {
+        if (mBlueAdapter == null) {
             errorExit("Fatal Error", "Bluetooth not support");
         } else {
-            if ( mBlueAdapter.isEnabled()) {
+            if (mBlueAdapter.isEnabled()) {
                 showToast("Already On!");
             } else {
                 showToast("Please turn it On!");
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                startActivity(intent);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    ActivityCompat.requestPermissions(Bluetooth_.this, new String[]{Manifest.permission.BLUETOOTH_ADMIN}, 1);
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+//                Intent intent = new Intent();
+//                intent.setAction(Intent.ACTION_SEND);
+//                intent.setType("text/plain");
+//                startActivity(intent);
                 //Prompt user to turn on Bluetooth
-//                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                startActivityForResult(enableBtIntent,0);
-//                startActivity(enableBtIntent);
-//                activityResultLauncher.launch(enableBtIntent);
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                activityResultLauncher.launch(enableBtIntent);
             }
         }
+    }
+
+    public void ShowPaired_device() {
+        mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Set<BluetoothDevice> pairedDevices = mBlueAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            ArrayList list = new ArrayList();
+            for (BluetoothDevice a : pairedDevices) {
+                name=a.getName();
+                address = a.getAddress();
+                list.add(name);
+                list.add(address);
+            }
+            Toast.makeText(getApplicationContext(), "Showing Paired Devices", Toast.LENGTH_SHORT).show();
+            final ArrayAdapter adapter = new ArrayAdapter(Bluetooth_.this, android.R.layout.simple_list_item_1, list);
+            adapter.add(name+ "\n"+ address);
+            lv.setAdapter(adapter);
+        }
+
     }
 //    public void onResume() {
 //        super.onResume();
@@ -258,6 +300,8 @@ public class Bluetooth_ extends AppCompatActivity {
 //                Log.e(TAG, "Could not create Insecure RFComm Connection",e);
 //            }
 //    }
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -270,6 +314,8 @@ public class Bluetooth_ extends AppCompatActivity {
             }
         }
     }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode){
@@ -285,7 +331,7 @@ public class Bluetooth_ extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-//
+
     public void write(String message) {                 //Transmit Data
         byte[] bytes=message.getBytes();
         try {
