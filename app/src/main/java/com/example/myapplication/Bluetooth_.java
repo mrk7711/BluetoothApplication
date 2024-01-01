@@ -32,6 +32,8 @@ import androidx.core.content.ContextCompat;
 
 public class Bluetooth_ extends AppCompatActivity {
     private BluetoothAdapter BA = null;
+    private static String device_name;
+    private static String device_address;
     private static final UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //We declare a default UUID to create the global variable
     private static String address = "48:23:35:F4:00:17";
     private static final String TAG = "bluetooth1";
@@ -54,6 +56,16 @@ public class Bluetooth_ extends AppCompatActivity {
         t2 = findViewById(R.id.textView18);
         t3 = findViewById(R.id.textView19);
         checkBTState();
+        mOnBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(device_name=="Rnica_Karimi")
+                {
+                    t1.setText("Thats Right!");
+                }
+                showToast("Turn off LED");
+            }
+        });
         mPairedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,7 +73,6 @@ public class Bluetooth_ extends AppCompatActivity {
             }
         });
     }
-
     private void checkBTState() {
         // Check for Bluetooth support and then check to make sure it is turned on
         // Emulator doesn't support Bluetooth and will return null
@@ -79,13 +90,13 @@ public class Bluetooth_ extends AppCompatActivity {
             }
         }
     }
-
     public void ShowPaired_device() {
 //        BluetoothDevice device = BA.getRemoteDevice(address);
         BluetoothAdapter BA2;
         if (ContextCompat.checkSelfPermission(Bluetooth_.this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             if(Build.VERSION.SDK_INT>=31)
-            {ActivityCompat.requestPermissions(Bluetooth_.this ,new String[]{Manifest.permission.BLUETOOTH_CONNECT},100);
+            {
+                ActivityCompat.requestPermissions(Bluetooth_.this ,new String[]{Manifest.permission.BLUETOOTH_CONNECT},100);
                 return;
             }
         }
@@ -101,8 +112,8 @@ public class Bluetooth_ extends AppCompatActivity {
         Set<BluetoothDevice> pairedDevices = BA2.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
-                String device_name= device.getName();
-                String device_address = device.getAddress();
+                 device_name= device.getName();
+                 device_address = device.getAddress();
                 Log.d(TAG, "deviceName:" + device_name);
 //                Log.d(TAG, "deviceHardwareAddress:" + device_address);
                 t2.setText(device_name);
