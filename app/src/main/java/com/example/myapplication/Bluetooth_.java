@@ -42,12 +42,16 @@ public class Bluetooth_ extends AppCompatActivity {
     Button mOffBtn;
     Button mPairedBtn;
     Button mVisBtn;
+    Button m1;
+    Button m2;
     TextView t1, t2, t3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
+        m1=findViewById(R.id.btnOn);
+        m2=findViewById(R.id.btnOff);
         mOnBtn = findViewById(R.id.ON);
         mOffBtn = findViewById(R.id.OFF);
         mPairedBtn = findViewById(R.id.Pair);
@@ -59,17 +63,43 @@ public class Bluetooth_ extends AppCompatActivity {
         mOnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(device_name=="Rnica_Karimi")
-                {
+                if (device_address == "48:23:35:F4:00:17") {
                     t1.setText("Thats Right!");
+                } else {
+                    t1.setText(device_name);
                 }
-                showToast("Turn off LED");
             }
         });
+
+        mOffBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+
+
         mPairedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ShowPaired_device();
+            }
+        });
+
+
+        m1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                write("1");
+                showToast("Turn LED ON!");
+            }
+        });
+
+
+        m2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                write("0");
+                showToast("Turn LED OFF!");
             }
         });
     }
@@ -127,6 +157,20 @@ public class Bluetooth_ extends AppCompatActivity {
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
         finish();
     }
+
+
+
+    //Transmit Data
+    public void write(String message) {
+        byte[] bytes=message.getBytes();
+        try {
+            outstream.write(bytes);
+        } catch (IOException e) {
+            Log.e(TAG, "Error occurred when sending data", e);
+        }
+    }
+
+
     private void showToast (String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
