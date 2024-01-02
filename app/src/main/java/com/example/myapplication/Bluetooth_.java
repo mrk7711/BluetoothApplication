@@ -33,8 +33,7 @@ import androidx.core.content.ContextCompat;
 
 public class Bluetooth_ extends AppCompatActivity {
     private BluetoothAdapter BA = null;
-    private OutputStream outstream;
-    private InputStream instream;
+    private BluetoothSocket mmSocket;
     private static String device_name;
     private static String device_address;
     BluetoothDevice DA = null;
@@ -42,6 +41,8 @@ public class Bluetooth_ extends AppCompatActivity {
     private static String address = "48:23:35:F4:00:17";
     private static final String TAG = "bluetooth1";
     private byte[] mmBuffer;
+    private  OutputStream mmOutStream = null;
+    private  InputStream mmInStream = null;
     private static final int REQUEST_ENABLE_BT = 1;
     //    public static Handler handler;
     Button mOnBtn;
@@ -110,32 +111,25 @@ public class Bluetooth_ extends AppCompatActivity {
         mConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                t1.setText(DA.getAddress());
-                ConnectThread connectThread = new ConnectThread(DA, MY_UUID);
-                connectThread.run();
-                if (connectThread.getMmSocket().isConnected()) {
-                    Log.d(TAG, "Calling ConnectedThread class");
-                    t1.setText("thats OK untill now!");
-                }
-
+                ConnectThread(DA,MY_UUID);
+                t1.setText("Connection!!!!");
             }
         });
-
 
         m1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                write("1");
-                showToast("Turn LED ON!");
+                ConnectedThread(mmSocket);
+                write("A");
+//                showToast("Turn LED ON!");
             }
         });
-
 
         m2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                write("0");
-                showToast("Turn LED OFF!");
+               read();
+//                showToast("Turn LED OFF!");
             }
         });
     }
@@ -197,7 +191,7 @@ public class Bluetooth_ extends AppCompatActivity {
     public void write(String message) {
         byte[] bytes = message.getBytes();
         try {
-            outstream.write(bytes);
+            mmOutStream.write(bytes);
         } catch (IOException e) {
             Log.e(TAG, "Error occurred when sending data", e);
         }
@@ -211,7 +205,8 @@ public class Bluetooth_ extends AppCompatActivity {
         while (true) {
             try {
                 // Read from the InputStream.
-                numBytes = instream.read(mmBuffer);
+                numBytes = mmInStream.read(mmBuffer);
+                t1.setText(numBytes);
             } catch (IOException e) {
                 Log.d(TAG, "Input stream was disconnected", e);
                 break;
@@ -219,8 +214,49 @@ public class Bluetooth_ extends AppCompatActivity {
         }
     }
 
+    public void cancel() {
+        try {
+            mmSocket.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Could not close the client socket", e);
+        }
+    }
+
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+
+    public void ConnectThread(BluetoothDevice device, UUID MY_UUID) {
+        try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= 31) {
+                    ActivityCompat.requestPermissions(Bluetooth_.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 100);
+                    return;
+                }
+            }
+            mmSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+            mmSocket.connect();
+
+        } catch (IOException e) {
+            Log.e(TAG, "Socket's create() method failed", e);
+        }
+    }
+
+
+    public void ConnectedThread(BluetoothSocket socket){
+        try {
+            mmInStream = socket.getInputStream();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Error occurred when creating input stream", e);
+        }
+        try {
+            mmOutStream = socket.getOutputStream();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Error occurred when creating output stream", e);
+        }
     }
 }
 

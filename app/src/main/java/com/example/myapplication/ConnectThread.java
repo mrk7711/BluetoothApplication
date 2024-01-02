@@ -26,8 +26,6 @@ public class ConnectThread extends Thread {
         BluetoothSocket tmp = null;
 
         try {
-            // Get a BluetoothSocket to connect with the given BluetoothDevice.
-            // MY_UUID is the app's UUID string, also used in the server code.
             tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
 
         } catch (IOException e) {
@@ -44,15 +42,8 @@ public class ConnectThread extends Thread {
             // until it succeeds or throws an exception.
             mmSocket.connect();
         } catch (IOException connectException) {
-            // Unable to connect; close the socket and return.
-            handler.obtainMessage(ERROR_READ, "Unable to connect to the BT device").sendToTarget();
             Log.e(TAG, "connectException: " + connectException);
-            try {
-                mmSocket.close();
-            } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
-            }
-            return;
+
         }
 
         // The connection attempt succeeded. Perform work associated with
