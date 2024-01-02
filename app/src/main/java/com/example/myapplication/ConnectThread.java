@@ -15,21 +15,21 @@ import java.util.UUID;
 //Given a BT device, the UUID and a Handler to set the results
 public class ConnectThread extends Thread {
     private final BluetoothSocket mmSocket;
-    private static final String TAG = "FrugalLogs";
+    private static final String TAG = "BT1";
     public static Handler handler;
     private final static int ERROR_READ = 0;
 
     @SuppressLint("MissingPermission")
-    public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler) {
+    public ConnectThread(BluetoothDevice device, UUID MY_UUID) {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
-        this.handler=handler;
 
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice.
             // MY_UUID is the app's UUID string, also used in the server code.
             tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+
         } catch (IOException e) {
             Log.e(TAG, "Socket's create() method failed", e);
         }
