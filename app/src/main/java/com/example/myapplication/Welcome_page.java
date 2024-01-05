@@ -17,7 +17,7 @@ public class Welcome_page extends AppCompatActivity {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                Welcome_page.this.startActivity(new Intent(Welcome_page.this,Second_Page.class));
+                Welcome_page.this.startActivity(new Intent(Welcome_page.this,Bluetooth_.class));
                 Welcome_page.this.finish();
             }
         },3000);
