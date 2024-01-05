@@ -9,11 +9,6 @@
     android:orientation="vertical"
     tools:context=".Bluetooth_">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"></LinearLayout>
-
     <Button
         android:id="@+id/btnOn"
         android:layout_width="wrap_content"
@@ -27,14 +22,20 @@
         android:layout_marginBottom="30dp"
         android:text="LED OFF" />
 
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="93dp"
+        android:layout_height="64dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/ON"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="on"
@@ -42,7 +43,7 @@
 
         <Button
             android:id="@+id/OFF"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="off"
@@ -50,50 +51,79 @@
 
         <Button
             android:id="@+id/vis"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="list"
-            android:text="VIS" />
+            android:text="Listen" />
 
         <Button
             android:id="@+id/Pair"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="pair"
-            android:text="Paired" />
+            android:text="Devices " />
+
+        <Button
+            android:id="@+id/disc"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Connect" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="339dp"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="398dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView17"
                 android:layout_width="match_parent"
-                android:layout_height="47dp"
-                android:text="TextView" />
+                android:layout_height="30dp" />
 
             <TextView
                 android:id="@+id/textView18"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                android:text="TextView" />
+                android:layout_height="30dp" />
 
             <TextView
                 android:id="@+id/textView19"
                 android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:text="TextView" />
+                android:layout_height="30dp" />
+
+            <EditText
+                android:id="@+id/edit"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:ems="10"
+                android:inputType="text" />
+
+            <Button
+                android:id="@+id/send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:phoneNumber="false"
+                android:text="Send" />
+
+            <TextView
+                android:id="@+id/messagebox"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="Message" />
+
+            <ListView
+                android:id="@+id/lv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
 
     </LinearLayout>
