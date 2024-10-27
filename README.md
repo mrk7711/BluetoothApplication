@@ -3,13 +3,13 @@ Welcome to the Bluetooth Chat Application! 🚀
 
 This project allows you to connect with others via Bluetooth and chat seamlessly, bringing people together in a fun and interactive way. Whether you're at a conference, in a café, or simply hanging out with friends, this app makes it easy to communicate without the need for an internet connection.
 ## Features
-Bluetooth Connectivity: Effortlessly connect with nearby devices to initiate chats.
+-Bluetooth Connectivity: Effortlessly connect with nearby devices to initiate chats.
 
-Real-Time Messaging: Enjoy instant messaging capabilities, ensuring that your conversations flow smoothly.
+-Real-Time Messaging: Enjoy instant messaging capabilities, ensuring that your conversations flow smoothly.
 
-User-Friendly Interface: The intuitive design makes it easy for anyone to start chatting in seconds.
+-User-Friendly Interface: The intuitive design makes it easy for anyone to start chatting in seconds.
 
-No Internet Required: Communicate freely without the need for Wi-Fi or mobile data.
+-No Internet Required: Communicate freely without the need for Wi-Fi or mobile data.
 
 ## How It Works
 1.Pairing Devices: Simply enable Bluetooth on your device and search for nearby devices to connect.
