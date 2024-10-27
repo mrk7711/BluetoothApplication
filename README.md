@@ -24,6 +24,8 @@ To get started with the Bluetooth Chat Application:
 2.Follow the installation instructions to set up the application on your device.
 3.Pair your device with others and start chatting!
 
+![Bluetooth](IMG_20241027_120009.jpg)
 ## Contact
 If you have any questions, suggestions, or feedback, please reach out! You can contact me via [Telegram](https://t.me/mrk7711) or email me at mrk77114@gmail.com.
+
 
