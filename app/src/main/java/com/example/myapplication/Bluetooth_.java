@@ -30,10 +30,6 @@ import androidx.core.content.ContextCompat;
 
 public class Bluetooth_ extends AppCompatActivity {
     private BluetoothAdapter BA = null;
-
-
-
-
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //We declare a default UUID to create the global variable
     private static String address = "48:23:35:F4:00:17";
     private static final String TAG = "bluetooth1";
@@ -216,9 +212,7 @@ public class Bluetooth_ extends AppCompatActivity {
         Toast.makeText(getBaseContext(), title + " - " + message, Toast.LENGTH_LONG).show();
         finish();
     }
-    private void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
+    private void showToast(String msg) {Toast.makeText(this, msg, Toast.LENGTH_LONG).show();}
     private class ServerClass extends Thread
     {
         private BluetoothServerSocket serverSocket;
