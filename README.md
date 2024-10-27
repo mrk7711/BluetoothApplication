@@ -21,7 +21,9 @@ This project allows you to connect with others via Bluetooth and chat seamlessly
 To get started with the Bluetooth Chat Application:
 
 1.Clone the repository to your local machine.
+
 2.Follow the installation instructions to set up the application on your device.
+
 3.Pair your device with others and start chatting!
 
 ![Bluetooth](IMG_20241027_120009.jpg)
